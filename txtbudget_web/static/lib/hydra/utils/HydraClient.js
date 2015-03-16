@@ -10,10 +10,10 @@ function hashUrl(hash) {
 
 module.exports = {
     GET(url) {
-	this.ajax({url:url});
+	return this.ajax({url:url});
     },
     POST(url, obj) {
-	this.ajax({
+	return this.ajax({
 	    url:url,
 	    dataType: "json",
 	    contentType: "application/json",
@@ -26,7 +26,7 @@ module.exports = {
 	});
     },
     PUT(url, obj) {
-	this.ajax({
+	return this.ajax({
 	    url:url,
 	    dataType: "json",
 	    contentType: "application/json",
@@ -39,13 +39,13 @@ module.exports = {
 	});
     },
     DELETE(url) {
-	this.ajax({
+	return this.ajax({
 	    url:url,
 	    type: "DELETE"
 	});
     },
     ajax(options) {
-	$.ajax(
+	return $.ajax(
 	    assign(
 		options, 
 		{

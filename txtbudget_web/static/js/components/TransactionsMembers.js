@@ -2,6 +2,7 @@ var React = require("react");
 var HydraClient = require("../../lib/hydra/utils/HydraClient");
 var jsonld = require("jsonld");
 var TxtBudgetConstants = require("../constants/TxtBudgetConstants");
+var TransactionsStore = require("../stores/TransactionsStore");
 var bs = require('react-bootstrap');
 var Table = bs.Table;
 var Price = require('format-price');
@@ -21,20 +22,27 @@ function dollarFormat(dollars) {
 
 module.exports = React.createClass({
     componentDidMount() {
-	this.props.store.addChangeListener(this._onChange);
+	TransactionsStore.addChangeListener(this._onChange);
     },
     componentDidUnMount() {
-	this.props.store.removeChangeListener(this._onChange);
+	TransactionsStore.removeChangeListener(this._onChange);
     },
     _onChange() {
-	this.setState({resource: this.props.store.get()})
+	this.setState({resource: TransactionsStore.get()})
     },
     getInitialState() {
-	return {resource: this.props.store.get()}
+	return {loading: false, resource: TransactionsStore.get()}
     },
     loadNextPage(e) {
 	e.preventDefault();
-	HydraClient.GET(this.state.resource.nextPage);
+	this.state.loading = true;
+	this.setState(this.state);
+	HydraClient.GET(this.state.resource.nextPage).then(
+	    () => {
+		this.state.loading = false;
+		this.setState(this.state);
+	    }
+	)
     },
     render() {
 	var members = !!this.state.resource.member ? this.state.resource.member : [];
@@ -52,7 +60,7 @@ module.exports = React.createClass({
 	    )
 	}
 	if(nextPage) {
-	    var nextPageButton = <div onClick={this.loadNextPage}>next</div>
+	    var nextPageButton = <bs.Button onClick={this.loadNextPage}>{this.state.loading ? "Loading" : "Next"}</bs.Button>
 	} else {
 	    var nextPageButton = null;
 	}

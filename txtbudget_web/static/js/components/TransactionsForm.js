@@ -7,40 +7,50 @@ var DropboxChooser = require("./DropboxChooser");
 var DropboxSaver = require("./DropboxSaver");
 var $ = require("jquery");
 var TxtBudgetActions = require("../actions/TxtBudgetActions");
+var TransactionsStore = require("../stores/TransactionsStore");
+var TransactionsFormStore = require("../stores/TransactionsFormStore");
+
 
 module.exports = React.createClass({
     handleSubmit() {
-	var data = this.props.store.get()
-	HydraClient.POST(
-	    this.props.url,
-	    data
-	)
-    },
-    onChange() {
-	// Update the TransactionsFormStore via the transactionsFormLoad action
-	var data = this.props.store.get();
-	data.csv = this.refs.csv.getValue();
-	TxtBudgetActions.transactionsFormPut(data);
+	var data = TransactionsFormStore.get()
+
+	this.state.loading = true;
+	this.setState(this.state);
+	TransactionsStore.reset(); // Not sure if this is very Flux like... 
+	HydraClient.POST(this.props.url, data)
     },
     onDropboxChooser(files) {
 	if(files.length) {
 	    // Update the TransactionsFormStore via the transactionsFormLoad action
-	    var data = this.props.store.get();
+	    var data = TransactionsFormStore.get();
 	    data.csv = files[0].data;
 	    TxtBudgetActions.transactionsFormPut(data);
 	}
     },
+    onInputChange() {
+	// Update the TransactionsFormStore via the transactionsFormLoad action
+	var data = TransactionsFormStore.get();
+	data.csv = this.refs.csv.getValue();
+	TxtBudgetActions.transactionsFormPut(data);
+    },
     componentDidMount() {
-	this.props.store.addChangeListener(this._onStoreChange);
+	TransactionsFormStore.addChangeListener(this._onStoreChange);
+	TransactionsStore.addChangeListener(this._onTransactionsChange);
     },
     componentDidUnMount() {
-	this.props.store.removeChangeListener(this._onStoreChange);
+	TransactionsFormStore.removeChangeListener(this._onStoreChange);
+	TransactionsStore.removeChangeListener(this._onTransactionsChange);
     },
     _onStoreChange() {
-	this.setState({resource: this.props.store.get()})
+	this.setState({resource: TransactionsFormStore.get()})
+    },
+    _onTransactionsChange() {
+	this.state.loading = false;
+	this.setState(this.state);
     },
     getInitialState() {
-	return {resource: this.props.store.get()}
+	return {loading: false, resource: TransactionsFormStore.get()}
     },
     render() {
 	var inputStyle = {
@@ -49,15 +59,15 @@ module.exports = React.createClass({
 
 	return ( <div>
 
-  		   <bs.Button bsStyle="primary" onClick={this.handleSubmit}>Update</bs.Button>
+  		   <bs.Button bsStyle="primary" onClick={this.handleSubmit}>{this.state.loading ? "Loading" : "Update" }</bs.Button>
 		   <DropboxChooser onSuccess={this.onDropboxChooser} />
-		   <DropboxSaver store={this.props.store} />
+		   <DropboxSaver />
 
 		 <bs.Input type="textarea" 
 	          ref="csv" 
 		  style={inputStyle}
 		  value={this.state.resource.csv} 
-		  onChange={this.onChange}
+		  onChange={this.onInputChange}
 		 />
 
         </div> )

@@ -19,6 +19,10 @@ var TransactionsStore = module.exports = assign({}, EventEmitter.prototype, {
     removeChangeListener(callback) {
 	this.removeListener(CHANGE_EVENT, callback);
     },
+    reset() {
+	_data = {};
+	this.emitChange();
+    },
     get() {
 	return _data;
     }
