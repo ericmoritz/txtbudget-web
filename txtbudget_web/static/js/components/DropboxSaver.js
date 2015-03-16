@@ -2,6 +2,7 @@ var React = require("react");
 var HydraClient = require("../../lib/hydra/utils/HydraClient");
 var jsonld = require("jsonld");
 var TxtBudgetConstants = require("../constants/TxtBudgetConstants");
+var TransactionsFormStore = require("../stores/TransactionsFormStore");
 var Transactions = require("./Transactions");
 var dateformat = require("dateformat");
 var bs = require('react-bootstrap');
@@ -11,7 +12,7 @@ module.exports = React.createClass({
     onSuccess() {
     },
     onClick() {
-	var data = this.props.store.get();
+	var data = TransactionsFormStore.get();
 	// convert the csv data to a data: url
 	var dataURI = `data:,${escape(data.csv)}`
 
