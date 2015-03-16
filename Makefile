@@ -1,5 +1,5 @@
 build: 
-	@make -C txtbudget_web/static/ build
+	@make -B -C txtbudget_web/static/ build
 
 test:
 	py.test txtbudget_web/tests.py
