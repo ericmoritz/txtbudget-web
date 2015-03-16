@@ -1,5 +1,8 @@
 .PHONY: build
 
+node_modules:
+	npm install
+
 build: node_modules js/bundle.js css/bundle.css
 
 js/bundle.js:
