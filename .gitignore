@@ -1,5 +1,5 @@
 *~
 *.pyc
 bundle.*
-.env/
+.venv/
 node_modules/

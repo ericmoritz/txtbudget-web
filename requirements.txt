@@ -12,5 +12,5 @@ python-dateutil==2.4.1
 python-memcached==1.53
 pytz==2014.10
 six==1.9.0
-txtbudget==1.0.3
+txtbudget==1.0.4
 Werkzeug==0.10.1
