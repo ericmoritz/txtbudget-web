@@ -1,4 +1,5 @@
 from flask import jsonify, Flask, url_for, request, redirect, render_template
+from flask.ext.cacheify import init_cacheify
 from txtbudget import queries
 from dateutil import parser
 from functools import wraps
@@ -27,12 +28,7 @@ def App():
     app.config['DEBUG'] = os.environ.get("DEBUG") == "true"
 
     TRANSACTIONS_TIMEOUT = 30 * 60
-
-    if "MEMCACHED" in os.environ:
-        from werkzeug.contrib.cache import MemcachedCache
-        cache = MemcachedCache([os.environ['MEMCACHED']], key_prefix=__name__)
-    else:
-        cache = SimpleCache()
+    cache = init_cacheify(app)
 
     def _context():
         return {
