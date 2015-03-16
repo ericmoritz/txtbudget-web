@@ -1,0 +1,8 @@
+module.exports = {
+    NAVIGATE_COMPLETE: Symbol("HYDRA_NAVIGATE_COMPLETE"),
+    NAVIGATE_ERROR: Symbol("HYDRA_NAVIGATE_ERROR"),
+    PayloadSources: {
+	SERVER_ACTION: Symbol("HYDRA_SERVER_ACTION"),
+	VIEW_ACTION: Symbol("HYDRA_VIEW_ACTION")
+    }
+}

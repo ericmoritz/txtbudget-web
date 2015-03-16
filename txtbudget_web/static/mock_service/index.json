@@ -1,0 +1,39 @@
+{
+  "@context": {
+    "Index": "tb:Index", 
+    "Link": "hydra:Link", 
+    "PagedCollection": "hydra:PagedCollection", 
+    "Transaction": "tb:Transaction", 
+    "Transactions": "tb:Transactions", 
+    "TransactionsForm": "tb:TransactionsForm", 
+    "amount": "xps:amount", 
+    "comment": "rdfs:comment", 
+    "csv": "tb:csv", 
+    "date": "dc:date", 
+    "dc": "http://purl.org/dc/elements/1.1/", 
+    "endDate": "schema:endDate", 
+    "hydra": "http://www.w3.org/ns/hydra/core#", 
+    "label": "rdfs:label", 
+    "member": "hydra:member", 
+    "nextPage": "hydra:nextPage", 
+    "previousPage": "hydra:previousPage", 
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#", 
+    "schema": "http://schema.org/", 
+    "startDate": "schema:startDate", 
+    "supportedClass": "hydra:supportedClass", 
+    "supportedProperty": "hydra:supportedProperty", 
+    "tb": "http://rdf.vocab-ld.org/vocabs/txtbudget.jsonld#", 
+    "transactions": "tb:transactions", 
+    "transactionsForm": "tb:transactionsForm", 
+    "xps": "http://vocab.deri.ie/xps#"
+  }, 
+  "@type": "Index", 
+  "transactions": {
+    "@id": "/mock_service/transactions.json", 
+    "operation": {
+      "expects": "TransactionForm", 
+      "method": "POST", 
+      "returns": "Transactions"
+    }
+  }
+}

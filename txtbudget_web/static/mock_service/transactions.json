@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "Index": "tb:Index", 
+    "Link": "hydra:Link", 
+    "PagedCollection": "hydra:PagedCollection", 
+    "Transaction": "tb:Transaction", 
+    "Transactions": "tb:Transactions", 
+    "TransactionsForm": "tb:TransactionsForm", 
+    "balance": "tb:balance",
+    "amount": "xps:amount", 
+    "comment": "rdfs:comment", 
+    "csv": "tb:csv", 
+    "date": "dc:date", 
+    "dc": "http://purl.org/dc/elements/1.1/", 
+    "endDate": "schema:endDate", 
+    "hydra": "http://www.w3.org/ns/hydra/core#", 
+    "label": "rdfs:label", 
+    "member": "hydra:member", 
+    "nextPage": "hydra:nextPage", 
+    "previousPage": "hydra:previousPage", 
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#", 
+    "schema": "http://schema.org/", 
+    "startDate": "schema:startDate", 
+    "supportedClass": "hydra:supportedClass", 
+    "supportedProperty": "hydra:supportedProperty", 
+    "tb": "http://rdf.vocab-ld.org/vocabs/txtbudget.jsonld#", 
+    "transactions": "tb:transactions", 
+    "transactionsForm": "tb:transactionsForm", 
+    "xps": "http://vocab.deri.ie/xps#"
+  }, 
+  "@type": "Transactions", 
+  "@id": "/mock_service/transactions.json",
+  "member": [
+    {
+      "@id": "#2015-04-14T00:00:00,test",
+      "@type": "Transaction",
+      "balance": "10.0",
+      "amount": 10.0, 
+      "date": "2015-04-14T00:00:00", 
+      "label": "test"
+    }
+  ], 
+  "nextPage": "/mock_service/transactions-2.json", 
+  "transactions": {
+    "@id": "/mock_service/transactions.json", 
+    "@type": "Transactions",
+    "operation": {
+      "expects": "TransactionsForm", 
+      "method": "POST", 
+      "returns": "Transactions"
+    }
+  },
+  "transactionsForm": {
+    "csv": "test, 10.00, 2015-03-14, 1m", 
+    "startDate": "2015-03-15T13:45:36.804Z"
+  }
+}
