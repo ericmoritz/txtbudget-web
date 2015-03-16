@@ -4,6 +4,7 @@ var jsonld = require("jsonld");
 var TxtBudgetConstants = require("../constants/TxtBudgetConstants");
 var bs = require('react-bootstrap');
 var DropboxChooser = require("./DropboxChooser");
+var DropboxSaver = require("./DropboxSaver");
 var $ = require("jquery");
 var TxtBudgetActions = require("../actions/TxtBudgetActions");
 
@@ -47,8 +48,11 @@ module.exports = React.createClass({
 	}
 
 	return ( <div>
+
   		   <bs.Button bsStyle="primary" onClick={this.handleSubmit}>Update</bs.Button>
 		   <DropboxChooser onSuccess={this.onDropboxChooser} />
+		   <DropboxSaver store={this.props.store} />
+
 		 <bs.Input type="textarea" 
 	          ref="csv" 
 		  style={inputStyle}

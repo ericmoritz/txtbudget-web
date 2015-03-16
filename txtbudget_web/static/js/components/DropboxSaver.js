@@ -8,29 +8,19 @@ var bs = require('react-bootstrap');
 var $ = require('jquery');
 
 module.exports = React.createClass({
-    onSuccess(files) {
-	// for each file, resolve their data
-	var promises = files.map(
-	    file => $.ajax(
-		{url: file.link}
-	    ).then(
-		(data, status, xhr) => {
-		    file['data'] = data;
-		    return file
-		}
-	    )
-	)
-	// join the promises and fire off the onSuccess callback
-	Promise.all(promises).then(
-	    files => this.props.onSuccess(files)
-	)
+    onSuccess() {
     },
     onClick() {
-	Dropbox.save({
-	    success: this.onSuccess,
-	    files: [
-	    ]
-	})
+	var data = this.props.store.get();
+	// convert the csv data to a data: url
+	var dataURI = `data:,${escape(data.csv)}`
+
+	Dropbox.save(
+	    dataURI, "budget.txt",
+	    {
+		success: this.onSuccess
+	    }
+	)
     },
     render() {
 	return <bs.Button onClick={this.onClick}>Save to Dropbox</bs.Button>
