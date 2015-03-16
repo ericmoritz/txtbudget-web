@@ -5,28 +5,41 @@ var TxtBudgetConstants = require("../constants/TxtBudgetConstants");
 var bs = require('react-bootstrap');
 var DropboxChooser = require("./DropboxChooser");
 var $ = require("jquery");
+var TxtBudgetActions = require("../actions/TxtBudgetActions");
 
 module.exports = React.createClass({
     handleSubmit() {
-	var csv = this.state.csv;
+	var data = this.props.store.get()
 	HydraClient.POST(
 	    this.props.url,
-	    {
-		"@context": TxtBudgetConstants.CONTEXT,
-		"csv": csv
-	    }
+	    data
 	)
     },
     onChange() {
-	this.setState({csv: this.refs.csv.getValue()})
+	// Update the TransactionsFormStore via the transactionsFormLoad action
+	var data = this.props.store.get();
+	data.csv = this.refs.csv.getValue();
+	TxtBudgetActions.transactionsFormPut(data);
     },
     onDropboxChooser(files) {
 	if(files.length) {
-	    this.setState({csv: files[0].data});
+	    // Update the TransactionsFormStore via the transactionsFormLoad action
+	    var data = this.props.store.get();
+	    data.csv = files[0].data;
+	    TxtBudgetActions.transactionsFormPut(data);
 	}
     },
+    componentDidMount() {
+	this.props.store.addChangeListener(this._onStoreChange);
+    },
+    componentDidUnMount() {
+	this.props.store.removeChangeListener(this._onStoreChange);
+    },
+    _onStoreChange() {
+	this.setState({resource: this.props.store.get()})
+    },
     getInitialState() {
-	return {csv: this.props.resource['csv']}
+	return {resource: this.props.store.get()}
     },
     render() {
 	var inputStyle = {
@@ -39,7 +52,7 @@ module.exports = React.createClass({
 		 <bs.Input type="textarea" 
 	          ref="csv" 
 		  style={inputStyle}
-		  value={this.state.csv} 
+		  value={this.state.resource.csv} 
 		  onChange={this.onChange}
 		 />
 
