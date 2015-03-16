@@ -12,8 +12,7 @@ module.exports = React.createClass({
 	    this.props.url,
 	    {
 		"@context": TxtBudgetConstants.CONTEXT,
-		"csv": csv,
-		"startDate": (new Date()).toISOString()
+		"csv": csv
 	    }
 	)
     },
