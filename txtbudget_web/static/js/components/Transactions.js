@@ -11,12 +11,12 @@ module.exports = React.createClass({
     render() {
 	return (
 		<bs.Grid>
-		  <bs.Col md={6}>
+		  <bs.Col md={8}>
 		    <TransactionsForm 
 		      url={this.props.resource.transactions['@id']}
 	              resource={this.props.resource.transactionsForm} />
 		  </bs.Col>
-		  <bs.Col md={6}>
+		  <bs.Col md={4}>
                     <TransactionsMembers store={TransactionsStore}/>
 		  </bs.Col>
 		</bs.Grid>
