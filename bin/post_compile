@@ -16,6 +16,7 @@ if [ -f bin/install_nodejs ]; then
 fi
 
 
+make test
 make -B build
 
 echo "-----> Post-compile done"
