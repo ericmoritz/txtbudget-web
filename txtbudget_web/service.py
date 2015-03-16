@@ -82,13 +82,13 @@ def App():
             if type(data) == tuple:
                 return data
 
-            transactions_url = url_for("transactions", _external=True)
+            transactions_url = url_for("transactions")
             data.update({
                 "@context": _context(),
                 "@graph": [
                     {
                         "@id": "http://rdf.vocab-ld.org/vocabs/txtbudget.jsonld",
-                        "owl:sameAs": url_for("vocab", _external=True)
+                        "owl:sameAs": url_for("vocab")
                     }
                 ],
                 "transactions": {
@@ -168,7 +168,6 @@ def App():
             url_for(
                 "transactions_GET",
                 key=key,
-                _external=True,
             ),
             code=303
         )
@@ -212,12 +211,11 @@ def App():
             key=key,
             startDate=(end_date + timedelta(days=1)).isoformat(),
             balance=members[-1]['balance'] if len(members) else 0.0,
-            _external=True
         )
 
         return {
             "@type": "Transactions",
-            "@id": url_for("transactions_GET", key=key, _external=True),
+            "@id": url_for("transactions_GET", key=key),
             "transactionsForm": transactionsForm,
             "member": members,
             "nextPage": nextPage
