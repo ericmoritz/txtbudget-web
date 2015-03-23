@@ -13,10 +13,19 @@ from uuid import uuid1 as uuid
 import re
 import os
 
+def _scheme():
+    return request.environ.get(
+        "HTTP_X_FORWARDED_PROTO",
+        request.environ.get(
+            'wsgi.url_scheme', 
+            'http'
+        ),
+    )
+
 
 def absolute_url(*args, **kwargs):
     kwargs['_external'] = True
-    kwargs['_scheme'] = request.environ['wsgi.url_scheme']
+    kwargs['_scheme'] = _scheme()
     return url_for(*args, **kwargs)
 
 
