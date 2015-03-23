@@ -83,6 +83,9 @@ def App():
     def service_response(fun):
         @wraps(fun)
         def inner(*args, **kwargs):
+            if "debug" in request.args:
+                assert False, request.environ
+
             data = fun(*args, **kwargs)
 
             if type(data) == tuple:
