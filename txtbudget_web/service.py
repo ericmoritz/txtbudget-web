@@ -14,6 +14,12 @@ import re
 import os
 
 
+def absolute_url(*args, **kwargs):
+    kwargs['_external'] = True
+    kwargs['_scheme'] = request.environ['wsgi.url_scheme']
+    return url_for(*args, **kwargs)
+
+
 def trace(x):
     from pprint import pprint
     pprint(x)
@@ -82,13 +88,13 @@ def App():
             if type(data) == tuple:
                 return data
 
-            transactions_url = url_for("transactions")
+            transactions_url = absolute_url("transactions")
             data.update({
                 "@context": _context(),
                 "@graph": [
                     {
                         "@id": "http://rdf.vocab-ld.org/vocabs/txtbudget.jsonld",
-                        "owl:sameAs": url_for("vocab")
+                        "owl:sameAs": absolute_url("vocab")
                     }
                 ],
                 "transactions": {
@@ -165,7 +171,7 @@ def App():
         cache.set(key, data, timeout=TRANSACTIONS_TIMEOUT)
         
         return redirect(
-            url_for(
+            absolute_url(
                 "transactions_GET",
                 key=key,
             ),
@@ -206,7 +212,7 @@ def App():
         )
 
         # build the members array
-        nextPage = url_for(
+        nextPage = absolute_url(
             "transactions_GET", 
             key=key,
             startDate=(end_date + timedelta(days=1)).isoformat(),
@@ -215,7 +221,7 @@ def App():
 
         return {
             "@type": "Transactions",
-            "@id": url_for("transactions_GET", key=key),
+            "@id": absolute_url("transactions_GET", key=key),
             "transactionsForm": transactionsForm,
             "member": members,
             "nextPage": nextPage
