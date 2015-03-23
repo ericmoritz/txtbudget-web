@@ -83,8 +83,7 @@ def App():
     def service_response(fun):
         @wraps(fun)
         def inner(*args, **kwargs):
-            if "debug" in request.args:
-                assert False, request.environ
+            is_debug = request.args.get('debug', 'false') == 'true'
 
             data = fun(*args, **kwargs)
 
@@ -94,6 +93,12 @@ def App():
             transactions_url = absolute_url("transactions")
             data.update({
                 "@context": _context(),
+                "environ": {
+                    key:value 
+                    for key, value in
+                    (request.environ if is_debug else {}).items()
+                    if type(value) in {str, unicode, list, dict}
+                },
                 "@graph": [
                     {
                         "@id": "http://rdf.vocab-ld.org/vocabs/txtbudget.jsonld",
