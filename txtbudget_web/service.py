@@ -294,7 +294,6 @@ def TransactionItem_to_ld(ti):
 
 def _members(csv, balance, end_date, start_date):
     members = []
-    import pdb; pdb.set_trace()
     for item in queries.until(
             csv.splitlines(),
             end_date,
