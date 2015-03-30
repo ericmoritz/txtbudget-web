@@ -14,7 +14,7 @@ var TransactionsFormStore = require("../stores/TransactionsFormStore");
 module.exports = React.createClass({
     handleSubmit() {
 	var data = TransactionsFormStore.get()
-
+	data.startDate = (new Date()).toISOString();
 	this.state.loading = true;
 	this.setState(this.state);
 	TransactionsStore.reset(); // Not sure if this is very Flux like... 

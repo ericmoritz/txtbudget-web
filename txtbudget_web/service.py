@@ -2,6 +2,7 @@ from flask import jsonify, Flask, url_for, request, redirect, render_template
 from flask.ext.cacheify import init_cacheify
 from txtbudget import queries
 from dateutil import parser
+from dateutil.tz import gettz
 from functools import wraps
 from pyld import jsonld
 from datetime import timedelta, date
@@ -34,9 +35,14 @@ def trace(x):
     pprint(x)
     return x
 
-def _parseDate(iso8601_val):
-    return parser.parse(iso8601_val)
-    
+
+def _parseDate(iso8601_val, tzinfo=None):
+    return parser.parse(iso8601_val).astimezone(
+        tzinfo
+    ).replace(
+        tzinfo=None
+    )
+
 
 def App():
     app = Flask(__name__)
@@ -118,7 +124,7 @@ def App():
                     "@id": transactions_url,
                     "operation": {
                         "method": "POST",
-                        "expects": "TransactionForm",
+                        "expects": "TransactionsForm",
                         "returns": "Transactions"
                     },
                 }
@@ -153,11 +159,19 @@ def App():
                     ]
                 },
                 {
-                    "@id": "TransactionForm",
+                    "@id": "TransactionsForm",
                     "supportedProperty": [
                         {
                             "@id": "csv",
                             "comment": "txtbudget csv contents"
+                        },
+                        {
+                            "@id": "startDate",
+                            "comment": "start date for the transactions"
+                        },
+                        {
+                            "@id": "timezone",
+                            "comment": "IANA time zone database timezone id. Defaults to \"America/New_York\"",
                         }
                     ]
                 },
@@ -208,6 +222,7 @@ def App():
         # refresh the cache to keep it in memory
         cache.set(key, data, timeout=TRANSACTIONS_TIMEOUT)
         balance = float(request.args.get('balance', '0.0'))
+
         start_date = _parseDate(
             request.args.get(
                 'startDate', 
@@ -215,12 +230,16 @@ def App():
                     'startDate',
                     date.today().isoformat()
                 )
+            ),
+            tzinfo=gettz(
+                data.get('timezone', "America/New_York")
             )
         )
-
+        start_date = start_date.replace(
+            hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date + timedelta(days=32)
-        transactionsForm = {'csv': data['csv']}
 
+        transactionsForm = {'csv': data['csv']}
         members = _members(
             data['csv'], 
             balance,
@@ -275,7 +294,11 @@ def TransactionItem_to_ld(ti):
 
 def _members(csv, balance, end_date, start_date):
     members = []
-    for item in queries.until(csv.splitlines(), end_date, start_date):
+    import pdb; pdb.set_trace()
+    for item in queries.until(
+            csv.splitlines(),
+            end_date,
+            start_date):
         member = TransactionItem_to_ld(item)
         balance += member['amount']
         member['balance'] = balance
