@@ -37,11 +37,10 @@ def trace(x):
 
 
 def _parseDate(iso8601_val, tzinfo=None):
-    return parser.parse(iso8601_val).astimezone(
-        tzinfo
-    ).replace(
-        tzinfo=None
-    )
+    dt = parser.parse(iso8601_val)
+    if dt.tzinfo != None:
+        dt = dt.astimezone(tzinfo)
+    return dt.replace(tzinfo=None)
 
 
 def App():
