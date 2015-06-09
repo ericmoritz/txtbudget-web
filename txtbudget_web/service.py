@@ -39,7 +39,7 @@ def trace(x):
 def _parseDate(iso8601_val, tzinfo=None):
     dt = parser.parse(iso8601_val)
     if dt.tzinfo != None:
-        dt = dt.astimezone(tzinfo)
+        dt = dt.replace(tzinfo=tzinfo)
     return dt.replace(tzinfo=None)
 
 
