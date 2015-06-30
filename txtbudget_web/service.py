@@ -5,7 +5,7 @@ from dateutil import parser
 from dateutil.tz import gettz
 from functools import wraps
 from pyld import jsonld
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from werkzeug import Request
 from werkzeug.contrib.cache import SimpleCache
 import json
@@ -36,11 +36,32 @@ def trace(x):
     return x
 
 
+def _cast_datetime(dt):
+    if isinstance(dt, date):
+        return datetime(dt.year, dt.month, dt.day, 0, 0, 0)
+    else:
+        return dt
+    
+
+def _force_tzinfo(tzinfo, dt):
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=tzinfo)
+    else:
+        return dt.astimezone(tzinfo)
+    
+
+def _isoformat(tzinfo, dt):
+    return _force_tzinfo(
+        tzinfo,
+        _cast_datetime(dt)
+    ).isoformat()
+
+
 def _parseDate(iso8601_val, tzinfo=None):
-    dt = parser.parse(iso8601_val)
-    if dt.tzinfo != None:
-        dt = dt.replace(tzinfo=tzinfo)
-    return dt.replace(tzinfo=None)
+    return _force_tzinfo(
+        tzinfo,
+        parser.parse(iso8601_val)
+    ).replace(tzinfo=None)
 
 
 def App():
@@ -213,6 +234,9 @@ def App():
     def transactions_GET(key):
         trace(request)
         data = cache.get(key)
+        tzinfo = gettz(
+            data.get('timezone', "America/New_York")
+        )
 
         if data is None:
             # return 404
@@ -227,12 +251,10 @@ def App():
                 'startDate', 
                 data.get(
                     'startDate',
-                    date.today().isoformat()
+                    _isoformat(tzinfo, date.today())
                 )
             ),
-            tzinfo=gettz(
-                data.get('timezone', "America/New_York")
-            )
+            tzinfo=tzinfo
         )
         start_date = start_date.replace(
             hour=0, minute=0, second=0, microsecond=0)
@@ -240,6 +262,7 @@ def App():
 
         transactionsForm = {'csv': data['csv']}
         members = _members(
+            tzinfo,
             data['csv'], 
             balance,
             end_date,
@@ -250,7 +273,7 @@ def App():
         nextPage = absolute_url(
             "transactions_GET", 
             key=key,
-            startDate=(end_date + timedelta(days=1)).isoformat(),
+            startDate=_isoformat(tzinfo, end_date + timedelta(days=1)),
             balance=members[-1]['balance'] if len(members) else 0.0,
         )
 
@@ -280,8 +303,8 @@ def _data_uri_encode(content_type, data):
     )
 
 
-def TransactionItem_to_ld(ti):
-    date = ti.date.isoformat()
+def TransactionItem_to_ld(tzinfo, ti):
+    date = _isoformat(tzinfo, ti.date)
     return {
         "@type": "Transaction",
         "@id": "#{date},{name}".format(date=date, name=ti.name),
@@ -291,13 +314,13 @@ def TransactionItem_to_ld(ti):
     }
 
 
-def _members(csv, balance, end_date, start_date):
+def _members(tzinfo, csv, balance, end_date, start_date):
     members = []
     for item in queries.until(
             csv.splitlines(),
             end_date,
             start_date):
-        member = TransactionItem_to_ld(item)
+        member = TransactionItem_to_ld(tzinfo, item)
         balance += member['amount']
         member['balance'] = balance
         members.append(member)
